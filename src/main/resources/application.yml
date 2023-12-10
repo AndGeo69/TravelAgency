@@ -1,6 +1,12 @@
 spring:
   datasource:                 # DB creds
-    driver-class-name:
-    url:
-    username:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost/travelagency
+    username: root
     password:
+  hikari:
+    schema: public
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: false
+    show-sql: true

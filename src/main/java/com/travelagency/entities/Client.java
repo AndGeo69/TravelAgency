@@ -29,7 +29,7 @@ public class Client {
     @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "id.user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "id.client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientBooking> clientBookings = new ArrayList<>();
 
     @Override

@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class }) //TODO remove this to connect to DB using application.yml properties
+@SpringBootApplication
 public class TravelAgencyApplication {
 
 	public static void main(String[] args) {

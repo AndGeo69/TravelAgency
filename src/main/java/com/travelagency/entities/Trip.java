@@ -40,7 +40,7 @@ public class Trip {
     private Integer availableCapacity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "agency_id", nullable = false)
     private Agency agency;
 
     @OneToMany(mappedBy = "id.trip")
