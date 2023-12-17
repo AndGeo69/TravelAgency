@@ -1,7 +1,12 @@
+document.getElementById("signUpBtn").addEventListener('click', function (evt) {
+    signUp();
+});
+
 function showForm(formId) {
     document.getElementById('tripTable').style.display = 'none';
     document.getElementById('signin-form').style.display = 'none';
     document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('trip-register').style.display = 'none';
 
     document.getElementById(formId + '-form').style.display = 'block';
     document.getElementById('introHeader').innerHTML = document.getElementById(formId).innerHTML;
@@ -9,13 +14,14 @@ function showForm(formId) {
 }
 
 function showContent(contentId) {
-    document.getElementById('tripTable').style.display = 'table';
+    document.getElementById('tripTable').style.display = 'none';
     document.getElementById('signin-form').style.display = 'none';
     document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('trip-register').style.display = 'block';
 
     document.getElementById('introParagraph').style.display = 'block';
     document.getElementById('introHeader').innerHTML = "Welcome to our Travel Agency";
-    document.getElementById('introParagraph').innerHTML = "Plan your next adventure with us!";
+    document.getElementById('introParagraph').innerHTML = "Create a new Trip!";
 }
 
 
@@ -50,6 +56,31 @@ var tripTestData = JSON.stringify([
     "schedule": "Experience the city that never sleeps"
     }
 ]);
+
+
+function signUp() {
+    var settings = {
+      "url": "http://localhost:8080/signup",
+      "method": "POST",
+      "timeout": 0,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "data": JSON.stringify({
+        "id": document.getElementById("signup-id").value,
+        "name": document.getElementById("signup-name").value,
+        "email": document.getElementById("signup-email").value,
+        "password": document.getElementById("signup-password").value,
+        "userType": document.getElementById("signUp-user-type").value
+      }),
+    };
+
+    $.ajax(settings).done(function (response) {
+       document.getElementById('introParagraph').innerHTML = response;
+    });
+}
+
+
 
 function updateTable(json) {
     result = jQuery.parseJSON(json);
