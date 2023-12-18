@@ -1,31 +1,44 @@
+
 document.getElementById("signUpBtn").addEventListener('click', function (evt) {
     signUp();
 });
 
-function showForm(formId) {
-    document.getElementById('tripTable').style.display = 'none';
-    document.getElementById('signin-form').style.display = 'none';
-    document.getElementById('signup-form').style.display = 'none';
-    document.getElementById('trip-register').style.display = 'none';
 
-    document.getElementById(formId + '-form').style.display = 'block';
-    document.getElementById('introHeader').innerHTML = document.getElementById(formId).innerHTML;
-    document.getElementById('introParagraph').style.display = 'none';
+function addListenerOnNavBarBtns() {
+    const navElem = document.getElementById("navId");
+
+    Array.from(navElem.children).forEach((el) => {
+        el.addEventListener('click', function (evt) {
+            toggleShowables(evt.target);
+        });
+    });
 }
 
-function showContent(contentId) {
-    document.getElementById('tripTable').style.display = 'none';
-    document.getElementById('signin-form').style.display = 'none';
-    document.getElementById('signup-form').style.display = 'none';
-    document.getElementById('trip-register').style.display = 'block';
+addListenerOnNavBarBtns();
 
-    document.getElementById('introParagraph').style.display = 'block';
-    document.getElementById('introHeader').innerHTML = "Welcome to our Travel Agency";
-    document.getElementById('introParagraph').innerHTML = "Create a new Trip!";
+function toggleShowables(trg) {
+    var elems = document.querySelectorAll(".showable");
+    elems.forEach(element => {
+        element.style.display = 'none';
+    });
+    var styling = "block";
+    if (trg.id == "trips-table") {
+        styling = "table"
+    }
+    document.getElementById(trg.id + '-form').style.display = styling;
 }
 
+function addRequiredOnAllInputs() {
+    const inputFields = document.querySelectorAll('input');
 
-<!-- remove when server is functional-->
+    inputFields.forEach((input) => {
+        input.setAttribute('required', true);
+    });
+}
+
+// addRequiredOnAllInputs(); //TODO uncomment to enable required fields
+
+// <!-- remove when server is functional-->
 var tripTestData = JSON.stringify([
     {
         "location": "Paris",
@@ -77,6 +90,10 @@ function signUp() {
 
     $.ajax(settings).done(function (response) {
        document.getElementById('introParagraph').innerHTML = response;
+    })
+    .fail(function (jqXHR, textStatus, errorThrown) {
+        document.getElementById('introParagraph').innerHTML = errorThrown;
+        console.error("Error: " + textStatus, errorThrown);
     });
 }
 
@@ -84,7 +101,7 @@ function signUp() {
 
 function updateTable(json) {
     result = jQuery.parseJSON(json);
-    var table = document.getElementById("tripTable");
+    var table = document.getElementById("trips-table-form");
 
     var rowCount = table.rows.length;
     for (var i = rowCount - 1; i > 0; i--) {

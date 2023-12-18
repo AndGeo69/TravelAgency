@@ -1,4 +1,4 @@
-package com.travelagency.entities;
+package travel.agency.entities;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;

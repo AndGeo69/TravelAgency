@@ -1,7 +1,7 @@
-package com.travelagency.repository;
+package travel.agency.repository;
 
-import com.travelagency.entities.Agency;
 import org.springframework.data.jpa.repository.JpaRepository;
+import travel.agency.entities.Agency;
 
 public interface AgencyRepository extends JpaRepository<Agency, Long> {
 }

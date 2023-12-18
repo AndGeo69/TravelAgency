@@ -1,6 +1,5 @@
-package com.travelagency.resources;
+package travel.agency.resources;
 
-import com.travelagency.UserTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

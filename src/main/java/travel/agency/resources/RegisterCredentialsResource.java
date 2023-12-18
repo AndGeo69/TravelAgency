@@ -1,4 +1,4 @@
-package com.travelagency.resources;
+package travel.agency.resources;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

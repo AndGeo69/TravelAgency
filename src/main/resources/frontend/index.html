@@ -13,18 +13,18 @@
     <h2>Travel Agency</h2>
 </header>
 
-<nav>
-    <a href="#" id="home" onclick="showContent('home')">Home</a>
-    <a href="#" id="signin" onclick="showForm('signin')">Sign In</a>
-    <a href="#" id="signup" onclick="showForm('signup')">Sign Up</a>
-    <a href="#" id="addTrip" onclick="showContent('trip-register')">Add Trip</a>
+<nav id="navId">
+    <a href="#" id="trips-table">Home</a>
+    <a href="#" id="signin">Sign In</a>
+    <a href="#" id="signup">Sign Up</a>
+    <a href="#" id="trip-register">Add Trip</a>
 </nav>
 
 <div class="container" id="main-container">
     <h2 id="introHeader">Welcome to our Travel Agency</h2>
     <p id="introParagraph">Plan your next adventure with us!</p>
 
-    <table id="tripTable">
+    <table class="showable" id="trips-table-form">
         <thead>
         <tr>
             <th>Location</th>
@@ -36,30 +36,30 @@
         </thead>
     </table>
 
-    <form id="signin-form" style="display: none;">
+    <form class="showable" id="signin-form" style="display: none;">
         <!-- Sign In Form Elements -->
         <label for="signin-email">Email:</label>
-        <input required type="email" id="signin-email" name="signin-email" placeholder="Enter your email">
+        <input type="email" id="signin-email" name="signin-email" placeholder="Enter your email">
 
         <label for="signin-password">Password:</label>
-        <input required type="password" id="signin-password" name="signin-password" placeholder="Enter your password">
+        <input type="password" id="signin-password" name="signin-password" placeholder="Enter your password">
 
         <input type="submit" value="Sign In">
     </form>
 
-    <form id="signup-form" style="display: none;">
+    <form class="showable" id="signup-form" style="display: none;">
         <!-- Sign Up Form Elements -->
         <label for="signup-id">Name:</label>
-        <input required type="text" id="signup-id" name="signup-id" placeholder="Enter your AFM">
+        <input type="text" id="signup-id" name="signup-id" placeholder="Enter your AFM">
 
         <label for="signup-name">Name:</label>
-        <input required type="text" id="signup-name" name="signup-name" placeholder="Enter your name">
+        <input type="text" id="signup-name" name="signup-name" placeholder="Enter your name">
 
         <label for="signup-email">Email:</label>
-        <input required type="email" id="signup-email" name="signup-email" placeholder="Enter your email">
+        <input type="email" id="signup-email" name="signup-email" placeholder="Enter your email">
 
         <label for="signup-password">Password:</label>
-        <input required type="password" id="signup-password" name="signup-password" placeholder="Enter your password">
+        <input type="password" id="signup-password" name="signup-password" placeholder="Enter your password">
 
         <label for="signUp-user-type">User Type:</label>
         <select id="signUp-user-type" name="user-type">
@@ -67,25 +67,26 @@
             <option value="agency">Agency</option>
         </select>
 
-        <button id="signUpBtn" value="Sign Up">Sign Up</button>
+        <input id="signUpBtn" type="submit" value="Sign Up">
+        <!-- <button id="signUpBtn" value="Sign Up">Sign Up</button> -->
     </form>
 
-    <div id="trip-register" style="display: none;">
+    <div class="showable" id="trip-register-form" style="display: none;">
         <form id="travel-form">
             <label for="location">Location:</label>
-            <input type="text" id="location" name="location" placeholder="Enter location" required>
+            <input type="text" id="location" name="location" placeholder="Enter location">
 
             <label for="start-date">Start Date:</label>
-            <input type="date" id="start-date" name="start-date" required>
+            <input type="date" id="start-date" name="start-date">
 
             <label for="end-date">End Date:</label>
-            <input type="date" id="end-date" name="end-date" required>
+            <input type="date" id="end-date" name="end-date" >
 
             <label for="travel-agency">Travel Agency:</label>
-            <input type="text" id="travel-agency" name="travel-agency" placeholder="Enter travel agency" required>
+            <input type="text" id="travel-agency" name="travel-agency" placeholder="Enter travel agency">
 
             <label for="schedule">Schedule:</label>
-            <textarea id="schedule" name="schedule" placeholder="Enter schedule description" rows="4" required></textarea>
+            <textarea id="schedule" name="schedule" placeholder="Enter schedule description" rows="4"></textarea>
 
             <input type="submit" value="Submit">
         </form>

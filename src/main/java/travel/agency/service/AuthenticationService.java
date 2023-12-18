@@ -1,15 +1,16 @@
-package com.travelagency.service;
+package travel.agency.service;
 
-import com.travelagency.UserTypeEnum;
-import com.travelagency.entities.Agency;
-import com.travelagency.entities.Client;
-import com.travelagency.repository.AgencyRepository;
-import com.travelagency.repository.ClientRepository;
-import com.travelagency.resources.RegisterCredentialsResource;
-import com.travelagency.resources.UserResource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import travel.agency.entities.Agency;
+import travel.agency.entities.Client;
+import travel.agency.exception.UserAlreadyExistsException;
+import travel.agency.repository.AgencyRepository;
+import travel.agency.repository.ClientRepository;
+import travel.agency.resources.RegisterCredentialsResource;
+import travel.agency.resources.UserResource;
+import travel.agency.resources.UserTypeEnum;
 
 import java.util.Objects;
 
@@ -31,10 +32,10 @@ public class AuthenticationService {
                 resource.getPassword() != null &&
                 resource.getUserType() != null) {
 
-            if (Objects.equals(resource.getUserType(), UserTypeEnum.Client.name())) {
+            if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Client.name().toLowerCase())) {
                 Client client = clientRepository.findById(resource.getId()).orElse(null);
                 if (client != null) {
-                    throw new RuntimeException("User already register"); //TODO custom exception
+                    throw new UserAlreadyExistsException();
                 }
 
                 client = new Client(resource.getId(), resource.getName(), resource.getEmail(), resource.getPassword(), null);
@@ -42,16 +43,18 @@ public class AuthenticationService {
                 clientRepository.save(client);
                 return new UserResource(resource.getId(), resource.getName(), UserTypeEnum.Client);
 
-            } else {
+            } else if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Agency.name().toLowerCase())) {
                 Agency agency = agencyRepository.findById(resource.getId()).orElse(null);
                 if (agency != null) {
-                    throw new RuntimeException("User already register"); //TODO custom exception
+                    throw new UserAlreadyExistsException();
                 }
 
                 agency = new Agency(resource.getId(), resource.getName(), resource.getEmail(), resource.getPassword(), null);
 
                 agencyRepository.save(agency);
                 return new UserResource(resource.getId(), resource.getName(), UserTypeEnum.Agency);
+            } else {
+                throw new RuntimeException("Unknown user type.");
             }
         }
 

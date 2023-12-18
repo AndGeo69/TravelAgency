@@ -1,4 +1,4 @@
-package com.travelagency.entities;
+package travel.agency.entities;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.FetchType;
