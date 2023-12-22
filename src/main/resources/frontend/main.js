@@ -90,11 +90,13 @@ function signUp() {
 
     $.ajax(settings).done(function (response) {
        document.getElementById('introParagraph').innerHTML = response;
-    })
-    .fail(function (jqXHR, textStatus, errorThrown) {
-        document.getElementById('introParagraph').innerHTML = errorThrown;
-        console.error("Error: " + textStatus, errorThrown);
     });
+    //todo handle errors
+// .fail(function (jqXHR, textStatus, errorThrown) {
+//         document.getElementById('introParagraph').innerHTML = errorThrown;
+//         console.error("Error: " + textStatus, errorThrown);
+//     })
+
 }
 
 

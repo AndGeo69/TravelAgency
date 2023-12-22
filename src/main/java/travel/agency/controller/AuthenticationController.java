@@ -16,7 +16,10 @@ import java.util.Optional;
 @RestController
 public class AuthenticationController {
 
-    private @Autowired AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
+    public AuthenticationController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @PostMapping(path = "/signup")
     public ResponseEntity<UserResource> signUpUser(@RequestBody RegisterCredentialsResource registerResource) {
