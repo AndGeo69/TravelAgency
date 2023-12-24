@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class UnknownUserException extends ApiException {
+public class RequiredFieldsException extends ApiException {
 
-    public UnknownUserException() {
-        super(APIError.USER_NOT_EXISTS);
+    public RequiredFieldsException() {
+        super(APIError.REQUIRED_FIELDS);
     }
 }

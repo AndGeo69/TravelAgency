@@ -16,6 +16,9 @@ public enum APIError {
     // HTTP_STATUS: 404
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, 404001, "The requested entity does not exist."),
     USER_EXISTS(HttpStatus.NOT_FOUND, 404002, "User already exists."),
+    USER_NOT_EXISTS(HttpStatus.NOT_FOUND, 404003, "User does not exist."),
+    UNKNOWN_USER_TYPE(HttpStatus.NOT_FOUND, 404004, "Unknown user type, please try again."),
+    REQUIRED_FIELDS(HttpStatus.NOT_FOUND, 404005, "All fields are required."),
 
     // HTTP_STATUS: 500
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "Internal Server Error");

@@ -5,10 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.agency.entities.Agency;
 import travel.agency.entities.Client;
+import travel.agency.exception.RequiredFieldsException;
+import travel.agency.exception.UnknownUserException;
+import travel.agency.exception.UnknownUserTypeException;
 import travel.agency.exception.UserAlreadyExistsException;
 import travel.agency.repository.AgencyRepository;
 import travel.agency.repository.ClientRepository;
-import travel.agency.resources.RegisterCredentialsResource;
+import travel.agency.resources.CredentialsResource;
 import travel.agency.resources.UserResource;
 import travel.agency.resources.UserTypeEnum;
 
@@ -22,7 +25,7 @@ public class AuthenticationService {
     private final AgencyRepository agencyRepository;
 
     @Transactional
-    public UserResource signUpUser(RegisterCredentialsResource resource) {
+    public UserResource signUpUser(CredentialsResource resource) {
         UserResource userResource = null;
 
         if (resource != null &&
@@ -54,11 +57,41 @@ public class AuthenticationService {
                 agencyRepository.save(agency);
                 return new UserResource(resource.getId(), resource.getName(), UserTypeEnum.Agency);
             } else {
-                throw new RuntimeException("Unknown user type.");
+                throw new UnknownUserTypeException();
             }
         }
 
-        return userResource;
+        throw new RequiredFieldsException();
+    }
+
+
+    @Transactional
+    public UserResource signInUser(CredentialsResource resource) {
+        if (resource == null) {
+            throw new RequiredFieldsException();
+        }
+
+        if (resource.getId() == null || resource.getPassword() == null) {
+            throw new RequiredFieldsException();
+        }
+
+        if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Client.name().toLowerCase())) {
+            Client client = clientRepository.findById(resource.getId()).orElse(null);
+            if (client != null) {
+                return new UserResource(client.getId(), client.getName(), UserTypeEnum.Client);
+            }
+
+            throw new UnknownUserException();
+        } else if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Agency.name().toLowerCase())) {
+            Agency agency = agencyRepository.findById(resource.getId()).orElse(null);
+            if (agency != null) {
+                return new UserResource(agency.getId(), agency.getName(), UserTypeEnum.Agency);
+            }
+
+            throw new UnknownUserException();
+        } else {
+            throw new UnknownUserTypeException();
+        }
     }
 
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterCredentialsResource {
+public class CredentialsResource {
     private Long id;
     private String name;
     private String email;

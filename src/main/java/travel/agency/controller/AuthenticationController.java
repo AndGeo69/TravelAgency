@@ -1,12 +1,11 @@
 package travel.agency.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import travel.agency.resources.RegisterCredentialsResource;
+import travel.agency.resources.CredentialsResource;
 import travel.agency.resources.UserResource;
 import travel.agency.service.AuthenticationService;
 
@@ -22,8 +21,13 @@ public class AuthenticationController {
     }
 
     @PostMapping(path = "/signup")
-    public ResponseEntity<UserResource> signUpUser(@RequestBody RegisterCredentialsResource registerResource) {
-        return ResponseEntity.of(Optional.of(authenticationService.signUpUser(registerResource)));
+    public ResponseEntity<UserResource> signUpUser(@RequestBody CredentialsResource registerResource) {
+        return ResponseEntity.of(Optional.ofNullable(authenticationService.signUpUser(registerResource)));
+    }
+
+    @PostMapping(path = "/signin")
+    public ResponseEntity<UserResource> singInUser(@RequestBody CredentialsResource loginResource) {
+        return ResponseEntity.of(Optional.ofNullable(authenticationService.signInUser(loginResource)));
     }
 
 }

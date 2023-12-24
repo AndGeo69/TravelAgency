@@ -38,13 +38,23 @@
 
     <form class="showable" id="signin-form" style="display: none;">
         <!-- Sign In Form Elements -->
-        <label for="signin-email">Email:</label>
-        <input type="email" id="signin-email" name="signin-email" placeholder="Enter your email">
+        <label for="signin-id">AFM:</label>
+        <input type="text" id="signin-id" name="signin-id" placeholder="Enter your AFM">
 
         <label for="signin-password">Password:</label>
         <input type="password" id="signin-password" name="signin-password" placeholder="Enter your password">
 
-        <input type="submit" value="Sign In">
+        <div class = "clientTypeRadio">
+            <label>User Type:</label>
+            <input type="radio" id="clientRadio" name="signin-user-type" value="client" checked>
+            <label for="clientRadio">Client</label>
+    
+            <input type="radio" id="agencyRadio" name="signin-user-type" value="agency">
+            <label for="agencyRadio">Agency</label>
+        </div>
+
+        <button class="customBtn" id="signInBtn" value="Sign in">Sign In</button>
+        <!-- <input type="submit" value="Sign In"> -->
     </form>
 
     <form class="showable" id="signup-form" style="display: none;">
@@ -63,12 +73,12 @@
 
         <label for="signUp-user-type">User Type:</label>
         <select id="signUp-user-type" name="user-type">
-            <option value="user" selected>User</option>
+            <option value="client" selected>Client</option>
             <option value="agency">Agency</option>
         </select>
 
 <!--        <input id="signUpBtn" type="submit" value="Sign Up">-->
-         <button id="signUpBtn" value="Sign Up">Sign Up</button>
+         <button class="customBtn" id="signUpBtn" value="Sign Up">Sign Up</button>
     </form>
 
     <div class="showable" id="trip-register-form" style="display: none;">
@@ -90,7 +100,15 @@
 
             <input type="submit" value="Submit">
         </form>
+    </div>
 
+    <div id="spinner" style="display: none;">
+        <img class="logo" id="spinnerLogo" src="logo.svg">
+    </div>
+
+    <div id="response-container" class="container" style="display: none;">        
+        <span id="close-icon" onclick="closeResponseContainer()">&#10006;</span>
+        <p id="response-message"></p>
     </div>
 </div>
 </body>
