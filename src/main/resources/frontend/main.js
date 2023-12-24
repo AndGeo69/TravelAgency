@@ -104,12 +104,12 @@ async function signUpAsync(data) {
             type: "POST",
             data: data,
         });
-
+        handleRegisterResponse(response);
     } catch (err) {
         handleRegisterResponse(err);
-        clearFormFields("signup-form");
     } finally {
         toggleSpinner();
+        clearFormFields("signup-form");
     }
 }
 
@@ -122,12 +122,13 @@ async function signInAsync(data) {
             type: "POST",
             data: data,
         });
-
+        handleLoginResponse(response);
+        
     } catch (err) {
         handleLoginResponse(err);
-        clearFormFields("signin-form");
     } finally {
         toggleSpinner();
+        clearFormFields("signin-form");
     }
 }
 
@@ -168,7 +169,7 @@ function clearFormFields(formId) {
 
         // Iterate over each input element and reset its value
         inputElements.forEach((element) => {
-            if (element.type !== 'button' && element.type !== 'submit' && element.type !== 'reset') {
+            if (element.type !== 'radio' && element.type !== 'button' && element.type !== 'submit' && element.type !== 'reset') {
                 // Clear the value for text fields, email fields, and select elements
                 element.value = '';
             }
