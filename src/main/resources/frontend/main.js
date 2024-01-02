@@ -9,6 +9,12 @@ document.getElementById("signInBtn").addEventListener('click', async function (e
     await signIn();
 });
 
+document.getElementById("redirectSignUpBtn").addEventListener('click', function (evt) {
+    toggleShowables(document.getElementById("signup"));
+    updateParagraph(document.getElementById("signup"));
+    closeResponseContainer();
+});
+
 
 function addListenerOnNavBarBtns() {
     const navElem = document.getElementById("navId");
@@ -23,6 +29,7 @@ function addListenerOnNavBarBtns() {
 }
 
 addListenerOnNavBarBtns();
+toggleElementById("trip-register");
 
 function toggleShowables(trg) {
     var elems = document.querySelectorAll(".showable");
@@ -30,7 +37,7 @@ function toggleShowables(trg) {
         element.style.display = 'none';
     });
     var styling = "block";
-    if (trg.id == "trips-table") {
+    if (trg.id.includes("table")) {
         styling = "table"
     }
     document.getElementById(trg.id + '-form').style.display = styling;
@@ -82,6 +89,25 @@ var tripTestData = JSON.stringify([
     }
 ]);
 
+
+
+async function makePostApiCall(data, endpoint) {
+    toggleSpinner();
+    try {
+        const response = await $.ajax({
+            url: "http://localhost:8080/" + endpoint,
+            contentType: "application/json",
+            type: "POST",
+            data: data,
+        });
+        handleAuthResponse(response);
+    } catch (err) {
+        handleAuthResponse(err);
+    } finally {
+        toggleSpinner();
+    }
+}
+
 async function signUp() {
     let data = JSON.stringify({
         "id": document.getElementById("signup-id").value,
@@ -96,41 +122,11 @@ async function signUp() {
 }
 
 async function signUpAsync(data) {
-    toggleSpinner();
-    try {
-        const response = await $.ajax({
-            url: "http://localhost:8080/signup",
-            contentType: "application/json",
-            type: "POST",
-            data: data,
-        });
-        handleRegisterResponse(response);
-    } catch (err) {
-        handleRegisterResponse(err);
-    } finally {
-        toggleSpinner();
-        clearFormFields("signup-form");
-    }
+    makePostApiCall(data, "signup")
+    clearFormFields("signup-form");
 }
 
-async function signInAsync(data) {
-    toggleSpinner();
-    try {
-        const response = await $.ajax({
-            url: "http://localhost:8080/signin",
-            contentType: "application/json",
-            type: "POST",
-            data: data,
-        });
-        handleLoginResponse(response);
-        
-    } catch (err) {
-        handleLoginResponse(err);
-    } finally {
-        toggleSpinner();
-        clearFormFields("signin-form");
-    }
-}
+var loggedInUser;
 
 async function signIn() {
 
@@ -141,6 +137,34 @@ async function signIn() {
       });
 
     await signInAsync(data);
+}
+
+async function signInAsync(data) {
+    makePostApiCall(data, "signin")
+    clearFormFields("signin-form");
+}
+
+function handleLoggedInUser() {
+    if (loggedInUser != null) {
+        if (loggedInUser.type.toLowerCase() == "agency") {
+            toggleElementById("trip-register");
+        }
+        toggleElementById("signin");
+        toggleElementById("signup");   
+        toggleElementById("my-trips-table");   
+         
+        toggleShowables(document.getElementById("trips-table"))
+        populateMyTripsTable(myTripsTestData);
+    }
+}
+
+function populateMyTripsTable(dataToPopulateTable) {
+    //TODO adjust test data to user / agency my trips accordingly
+    updateTable(dataToPopulateTable, "my-trips-table-form");
+}
+
+function isElemDisplayed(elemId) {
+    return document.getElementById(elemId).style.display != "none";
 }
 
 function getSelectedUserType() {
@@ -191,13 +215,15 @@ function handleJsonResponse(response) {
     }
 }
 
-function handleRegisterResponse(response) {
+function handleAuthResponse(response) {
     var msg;
     if (response != null) {
         if (response.responseText != null) {
             msg = handleJsonResponse(response);
         } else {
-            msg = "Successfully register, please sign in !";
+            msg = "Welcome " + response.type + " " + response.name;
+            loggedInUser = response;
+            handleLoggedInUser();
         }
         displayResponseMessage(msg);
     } else {
@@ -205,20 +231,6 @@ function handleRegisterResponse(response) {
     }
 }
 
-function handleLoginResponse(response) {
-    var msg;
-    if (response != null) {
-        if (response.responseText != null) {
-            msg = handleJsonResponse(response);
-        } else {
-            msg = "Welcome " + response.type + " " + response.name;
-        }
-        displayResponseMessage(msg);
-    } else {
-        displayResponseMessage("Erron occured, please try again later.");
-    }
-}
- 
 function displayResponseMessage(message) {
     if (message == null) {
         return;
@@ -241,9 +253,9 @@ function closeResponseContainer() {
     document.getElementById('response-container').style.display = 'none';
 }
 
-function updateTable(json) {
+function updateTable(json, tableId) {
     result = jQuery.parseJSON(json);
-    var table = document.getElementById("trips-table-form");
+    var table = document.getElementById(tableId);
 
     var rowCount = table.rows.length;
     for (var i = rowCount - 1; i > 0; i--) {
@@ -274,15 +286,35 @@ function updateTable(json) {
     }
 }
 
-updateTable(tripTestData);
+updateTable(tripTestData, "trips-table-form");
 
-
-
-function toggleSpinner() {
-    var spinner = document.getElementById("spinner");
-    if (spinner.style.display == 'none') {
-        spinner.style.display = 'block';
+function toggleElementById(id) {
+    var elem = document.getElementById(id);
+    if (elem.style.display == 'none') {
+        elem.style.display = 'inline-block';
     } else {
-        spinner.style.display = 'none';
+        elem.style.display = 'none';
     }
 }
+
+function toggleSpinner() {
+    toggleElementById("spinner");
+}
+
+
+var myTripsTestData = JSON.stringify([
+    {
+        "location": "Paris",
+        "startDate": "2023-12-10",
+        "endDate": "2023-12-15",
+        "agency": "Adventure Tours",
+        "schedule": "Explore the city of love"
+    },
+    {
+    "location": "Thessaloniki",
+    "startDate": "2023-10-05",
+    "endDate": "2023-10-10",
+    "agency": "Saloniki tours",
+    "schedule": "Experience the city that never sleeps"
+    }
+]);

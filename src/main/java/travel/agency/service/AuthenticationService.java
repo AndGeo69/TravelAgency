@@ -26,8 +26,6 @@ public class AuthenticationService {
 
     @Transactional
     public UserResource signUpUser(CredentialsResource resource) {
-        UserResource userResource = null;
-
         if (resource != null &&
                 resource.getId() != null &&
                 resource.getName() != null &&

@@ -68,6 +68,20 @@ select {
     box-sizing: border-box;
 }
 
+.rowWrapper {
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.rightContent {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -126,6 +140,7 @@ th {
 }
 
 .customBtn {
+    height: 5vh;
     background-color: #04453d;
     color: #fff;
     padding: 10px 15px;

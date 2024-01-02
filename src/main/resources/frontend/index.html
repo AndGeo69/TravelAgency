@@ -14,17 +14,30 @@
 </header>
 
 <nav id="navId">
-    <a href="#" id="trips-table">Home</a>
+    <a href="#" id="trips-table">Trip Board</a>
     <a href="#" id="signin">Sign In</a>
     <a href="#" id="signup">Sign Up</a>
     <a href="#" id="trip-register">Add Trip</a>
+    <a href="#" style="display: none;" id="my-trips-table">My Trips</a>
 </nav>
 
 <div class="container" id="main-container">
     <h2 id="introHeader">Welcome to our Travel Agency</h2>
     <p id="introParagraph">Plan your next adventure with us!</p>
 
-    <table class="showable" id="trips-table-form">
+    <table class="showable table" id="trips-table-form">
+        <thead>
+        <tr>
+            <th>Location</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Travel Agency</th>
+            <th>Schedule</th>
+        </tr>
+        </thead>
+    </table>
+
+    <table class="showable table" id="my-trips-table-form" style="display: none;">
         <thead>
         <tr>
             <th>Location</th>
@@ -53,7 +66,14 @@
             <label for="agencyRadio">Agency</label>
         </div>
 
-        <button class="customBtn" id="signInBtn" value="Sign in">Sign In</button>
+        <div class="rowWrapper">
+            <button class="customBtn" id="signInBtn" value="Sign in">Sign In</button>
+            <div class="rightContent">
+                <p style="padding-right: 5px">Not registered? Sign Up now!</p>
+                <button class="customBtn" id="redirectSignUpBtn" value="Sign up">Sign Up</button>
+            </div>
+        </div>
+       
         <!-- <input type="submit" value="Sign In"> -->
     </form>
 
@@ -92,13 +112,13 @@
             <label for="end-date">End Date:</label>
             <input type="date" id="end-date" name="end-date" >
 
-            <label for="travel-agency">Travel Agency:</label>
-            <input type="text" id="travel-agency" name="travel-agency" placeholder="Enter travel agency">
+            <!-- <label for="travel-agency">Agency:</label>
+            <input type="text" id="travel-agency" name="travel-agency" placeholder="Enter travel agency"> -->
 
             <label for="schedule">Schedule:</label>
             <textarea id="schedule" name="schedule" placeholder="Enter schedule description" rows="4"></textarea>
 
-            <input type="submit" value="Submit">
+            <button class="customBtn" id="addTripBtn" value="Add Trip">Add Trip</button>
         </form>
     </div>
 
