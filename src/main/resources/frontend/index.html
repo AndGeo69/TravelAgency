@@ -28,10 +28,12 @@
     <table class="showable table" id="trips-table-form">
         <thead>
         <tr>
-            <th>Location</th>
+            <th>Start Location</th>
+            <th>End Location</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Travel Agency</th>
+            <th>Slots left</th>
             <th>Schedule</th>
         </tr>
         </thead>
@@ -40,10 +42,12 @@
     <table class="showable table" id="my-trips-table-form" style="display: none;">
         <thead>
         <tr>
-            <th>Location</th>
+            <th>Start Location</th>
+            <th>End Location</th>
             <th>Start Date</th>
             <th>End Date</th>
             <th>Travel Agency</th>
+            <th>Slots left</th>
             <th>Schedule</th>
         </tr>
         </thead>
@@ -103,8 +107,14 @@
 
     <div class="showable" id="trip-register-form" style="display: none;">
         <form id="travel-form">
-            <label for="location">Location:</label>
-            <input type="text" id="location" name="location" placeholder="Enter location">
+            <!-- <div class="columnWrapper"> --> <!-- better UI using column/row wrapper classes -->
+                <label for="startLocation">Starting Location:</label>
+                <input type="text" id="startLocation" name="startLocation" placeholder="Enter starting location">
+    
+                 <label for="endLocation">Ending Location:</label> <!-- "ending" locatio doesnt make sense -->
+                <input type="text" id="endLocation" name="endLocation" placeholder="Enter end location">
+    
+            <!-- </div> -->
 
             <label for="start-date">Start Date:</label>
             <input type="date" id="start-date" name="start-date">
@@ -112,11 +122,11 @@
             <label for="end-date">End Date:</label>
             <input type="date" id="end-date" name="end-date" >
 
-            <!-- <label for="travel-agency">Agency:</label>
-            <input type="text" id="travel-agency" name="travel-agency" placeholder="Enter travel agency"> -->
+            <label for="tripMaxCapacity">Max capacity:</label>
+            <input type="number" min="1" max="500" id="tripMaxCapacity" name="tripMaxCapacity" >
 
             <label for="schedule">Schedule:</label>
-            <textarea id="schedule" name="schedule" placeholder="Enter schedule description" rows="4"></textarea>
+            <textarea id="textAreaSchedule" name="schedule" placeholder="Enter schedule description" rows="4"></textarea>
 
             <button class="customBtn" id="addTripBtn" value="Add Trip">Add Trip</button>
         </form>

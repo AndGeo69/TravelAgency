@@ -54,13 +54,15 @@ form {
 }
 
 label {
-    margin-bottom: 8px;
+    /* margin-bottom: 8px; */
+    padding-bottom: 8px;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"],
 input[type="date"],
+input[type="number"],
 select {
     width: 100%;
     padding: 10px;
@@ -74,6 +76,15 @@ select {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+}
+
+.columnWrapper {
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    max-width: 64vh;
 }
 
 .rightContent {
@@ -175,4 +186,9 @@ th {
     to {
         transform: rotate(360deg);
     }
+}
+
+#textAreaSchedule {
+    resize: none;
+    margin-bottom: 10px;
 }

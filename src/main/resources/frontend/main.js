@@ -60,31 +60,39 @@ function addRequiredOnAllInputs() {
 // <!-- remove when server is functional-->
 var tripTestData = JSON.stringify([
     {
-        "location": "Paris",
+        "startLocation": "Paris",
+        "endLocation": "Paris",
         "startDate": "2023-12-10",
         "endDate": "2023-12-15",
         "agency": "Adventure Tours",
+        "slotsLeft": "15",
         "schedule": "Explore the city of love"
     },
     {
-        "location": "Tokyo",
+        "startLocation": "Tokyo",
+        "endLocation": "Tokyo",
         "startDate": "2023-11-20",
         "endDate": "2023-11-25",
         "agency": "Discover Japan",
+        "slotsLeft": "15",
         "schedule": "Visit historical landmarks"
     },
     {
-        "location": "New York",
+        "startLocation": "New York",
+        "endLocation": "New York",
         "startDate": "2023-10-05",
         "endDate": "2023-10-10",
         "agency": "Big Apple Adventures",
+        "slotsLeft": "15",
         "schedule": "Experience the city that never sleeps"
     },
     {
-    "location": "Thessaloniki",
+    "startLocation": "Thessaloniki",
+    "endLocation": "Thessaloniki",
     "startDate": "2023-10-05",
     "endDate": "2023-10-10",
     "agency": "Saloniki tours",
+    "slotsLeft": "15",
     "schedule": "Experience the city that never sleeps"
     }
 ]);
@@ -143,6 +151,10 @@ async function signInAsync(data) {
     makePostApiCall(data, "signin")
     clearFormFields("signin-form");
 }
+
+//TODO remove this, added for easier debugging
+toggleElementById("trip-register");
+
 
 function handleLoggedInUser() {
     if (loggedInUser != null) {
@@ -265,10 +277,12 @@ function updateTable(json, tableId) {
     for(var k in result) {
         var trip = result[k];
 
-        loc = trip.location;
+        startLoc = trip.startLocation;
+        endLoc = trip.endLocation;
         startDate = trip.startDate;
         endDate = trip.endDate;
         agency = trip.agency;
+        slotsLeft = trip.slotsLeft;
         schedule = trip.schedule;
 
         var row = table.insertRow(-1);
@@ -277,12 +291,16 @@ function updateTable(json, tableId) {
         var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
         var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
+        var cell7 = row.insertCell(6);
 
-        cell1.innerHTML = loc;
-        cell2.innerHTML = startDate;
-        cell3.innerHTML = endDate;
-        cell4.innerHTML = agency;
-        cell5.innerHTML = schedule;
+        cell1.innerHTML = startLoc;
+        cell2.innerHTML = endLoc;
+        cell3.innerHTML = startDate;
+        cell4.innerHTML = endDate;
+        cell5.innerHTML = agency;
+        cell6.innerHTML = slotsLeft;
+        cell7.innerHTML = schedule;
     }
 }
 
@@ -301,20 +319,56 @@ function toggleSpinner() {
     toggleElementById("spinner");
 }
 
-
+//TODO my trip test data - remove
 var myTripsTestData = JSON.stringify([
     {
-        "location": "Paris",
+        "startLocation": "Paris",
+        "endLocation": "Paris",
         "startDate": "2023-12-10",
         "endDate": "2023-12-15",
         "agency": "Adventure Tours",
+        "slotsLeft": "15",
         "schedule": "Explore the city of love"
     },
     {
-    "location": "Thessaloniki",
+    "startLocation": "Thessaloniki",
+    "startLocation": "Thessaloniki",
     "startDate": "2023-10-05",
     "endDate": "2023-10-10",
     "agency": "Saloniki tours",
+    "slotsLeft": "15",
     "schedule": "Experience the city that never sleeps"
     }
 ]);
+
+
+document.getElementById("travel-form").addEventListener('submit', function (event) {
+    event.preventDefault();
+    console.log('Form submitted!');
+});
+
+document.getElementById("textAreaSchedule").addEventListener("keydown", (e) => {
+    if(!((e.code > 95 && e.code < 106)
+        || (e.code > 47 && e.code < 58) 
+        || e.code == 8)) {
+        return false;
+    }
+})
+
+async function addTrip() { // TO be tested
+    let data = JSON.stringify({
+        // "id": document.getElementById("signup-id").value,
+        // "name": document.getElementById("signup-name").value,
+        // "email": document.getElementById("signup-email").value,
+        // "password": document.getElementById("signup-password").value,
+        // "userType": document.getElementById("signUp-user-type").value
+    });
+
+
+    await addTripAsync(data);
+}
+
+async function addTripAsync(data) {
+    makePostApiCall(data, "addTrip")
+    clearFormFields("travel-form");
+}
