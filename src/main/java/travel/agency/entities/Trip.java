@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -19,13 +19,14 @@ import java.util.List;
 public class Trip {
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "startDate")
-    private OffsetDateTime startDate;
+    private Date startDate;
 
     @Column(name = "endDate")
-    private OffsetDateTime endDate;
+    private Date endDate;
 
     @Column(name = "startLocation")
     private String startLocation;

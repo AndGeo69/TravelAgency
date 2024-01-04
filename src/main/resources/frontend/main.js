@@ -15,6 +15,21 @@ document.getElementById("redirectSignUpBtn").addEventListener('click', function 
     closeResponseContainer();
 });
 
+document.getElementById("addTripBtn").addEventListener('click', async function (evt) {
+    evt.preventDefault();
+    await addTrip();
+});
+
+document.getElementById("trips-table").addEventListener('click', async function (evt) {
+    evt.preventDefault();
+    await getAvailableTripsAndLoadTable();
+});
+
+document.getElementById("my-trips-table").addEventListener('click', async function (evt) {
+    evt.preventDefault();
+    await getMyTrips();
+});
+
 
 function addListenerOnNavBarBtns() {
     const navElem = document.getElementById("navId");
@@ -101,18 +116,49 @@ var tripTestData = JSON.stringify([
 
 async function makePostApiCall(data, endpoint) {
     toggleSpinner();
+    var response;
     try {
-        const response = await $.ajax({
+        response = await $.ajax({
             url: "http://localhost:8080/" + endpoint,
             contentType: "application/json",
             type: "POST",
             data: data,
         });
-        handleAuthResponse(response);
     } catch (err) {
-        handleAuthResponse(err);
+        displayResponseMessage(err);
     } finally {
         toggleSpinner();
+        return response;
+    }
+}
+
+function handleApiResponse(response) {
+    var msg;
+    if (response != null) {
+        if (response.responseText != null) {
+            msg = handleJsonResponse(response);
+        } else {
+            return response;
+        }
+        displayResponseMessage(msg);
+    } else {
+        displayResponseMessage("Erron occured or null reponse from api call.");
+    }
+}
+
+function handleAuthResponse(response) {
+    var msg;
+    if (response != null) {
+        if (response.responseText != null) {
+            msg = handleJsonResponse(response);
+        } else {
+            msg = "Welcome " + response.type + " " + response.name;
+            loggedInUser = response;
+            handleLoggedInUser();
+        }
+        displayResponseMessage(msg);
+    } else {
+        displayResponseMessage("All fields are required.");
     }
 }
 
@@ -125,12 +171,12 @@ async function signUp() {
         "userType": document.getElementById("signUp-user-type").value
     });
 
-
     await signUpAsync(data);
 }
 
 async function signUpAsync(data) {
-    makePostApiCall(data, "signup")
+    var response = await makePostApiCall(data, "signup");
+    handleAuthResponse(response);
     clearFormFields("signup-form");
 }
 
@@ -148,7 +194,8 @@ async function signIn() {
 }
 
 async function signInAsync(data) {
-    makePostApiCall(data, "signin")
+    var response = await makePostApiCall(data, "signin");
+    handleAuthResponse(response);
     clearFormFields("signin-form");
 }
 
@@ -159,7 +206,8 @@ toggleElementById("trip-register");
 function handleLoggedInUser() {
     if (loggedInUser != null) {
         if (loggedInUser.type.toLowerCase() == "agency") {
-            toggleElementById("trip-register");
+            // toggleElementById("trip-register");
+            //TODO uncomment this, added for easier debugging
         }
         toggleElementById("signin");
         toggleElementById("signup");   
@@ -227,22 +275,6 @@ function handleJsonResponse(response) {
     }
 }
 
-function handleAuthResponse(response) {
-    var msg;
-    if (response != null) {
-        if (response.responseText != null) {
-            msg = handleJsonResponse(response);
-        } else {
-            msg = "Welcome " + response.type + " " + response.name;
-            loggedInUser = response;
-            handleLoggedInUser();
-        }
-        displayResponseMessage(msg);
-    } else {
-        displayResponseMessage("Erron occured, please try again later.");
-    }
-}
-
 function displayResponseMessage(message) {
     if (message == null) {
         return;
@@ -304,7 +336,71 @@ function updateTable(json, tableId) {
     }
 }
 
-updateTable(tripTestData, "trips-table-form");
+function updateTableWithJsonObject(tripList, tableId) {
+    if (tripList == null) {
+        return;
+    }
+    var table = document.getElementById(tableId);
+
+    // Clear existing rows
+    var rowCount = table.rows.length;
+    for (var i = rowCount - 1; i > 0; i--) {
+        table.deleteRow(i);
+    }
+
+    // Add new rows from the tripList
+    tripList.forEach(trip => {
+        var row = table.insertRow(-1);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
+        var cell7 = row.insertCell(6);
+
+        cell1.innerHTML = trip.startLocation;
+        cell2.innerHTML = trip.endLocation;
+        cell3.innerHTML = trip.startDate;
+        cell4.innerHTML = trip.endDate;
+        cell5.innerHTML = trip.agencyName;
+        cell6.innerHTML = trip.availableCapacity;
+        cell7.innerHTML = trip.schedule;
+    });
+}
+
+// updateTable(tripTestData, "trips-table-form");
+getAvailableTripsAndLoadTable();
+
+//another way to make rest calls, using js's fetch
+async function getAvailableTrips() {
+    try {
+        const response = await fetch('http://localhost:8080/trip/getAvailableTrips');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const jsonResponse = await response.json();
+        return jsonResponse;
+    } catch (error) {
+        console.error('Error fetching available trips:', error);
+        return null; // Handle error appropriately in your application
+    }
+}
+
+function getAvailableTripsAndLoadTable() {
+    getAvailableTrips().then(response => {
+        if (response) {
+            updateTableWithJsonObject(response, "trips-table-form");
+            console.log('Available Trips:', response);
+        } else {
+            // Handle error
+            console.log('Failed to fetch available trips.');
+        }
+    });
+}
+
 
 function toggleElementById(id) {
     var elem = document.getElementById(id);
@@ -357,18 +453,45 @@ document.getElementById("textAreaSchedule").addEventListener("keydown", (e) => {
 
 async function addTrip() { // TO be tested
     let data = JSON.stringify({
-        // "id": document.getElementById("signup-id").value,
-        // "name": document.getElementById("signup-name").value,
-        // "email": document.getElementById("signup-email").value,
-        // "password": document.getElementById("signup-password").value,
-        // "userType": document.getElementById("signUp-user-type").value
+        "tripId": "",
+        "availableCapacity": document.getElementById("tripMaxCapacity").value,
+        "startDate": document.getElementById("start-date").value,
+        "endDate": document.getElementById("end-date").value,
+        "startLocation": document.getElementById("startLocation").value,
+        "endLocation": document.getElementById("endLocation").value,
+        "agencyId": loggedInUser.id,
+        "schedule": document.getElementById("textAreaSchedule").value,
+        
     });
 
 
     await addTripAsync(data);
 }
 
-async function addTripAsync(data) {
-    makePostApiCall(data, "addTrip")
-    clearFormFields("travel-form");
+async function addTripAsync(tripJson) {
+    var response = await makePostApiCall(tripJson, "trip/addTrip");
+    var tripResource = handleApiResponse(response);
+    if (tripResource != null) {
+        displayResponseMessage("Successfully added trip " + tripResource.tripId);
+    }
+    // clearFormFields("travel-form");
+}
+
+async function getMyTrips() { // TO be tested
+    if (loggedInUser == null) {
+        return;
+    }
+    let data = JSON.stringify(
+        loggedInUser.id
+    );
+
+
+    await getMyTripsAsync(data);
+}
+
+async function getMyTripsAsync(tripJson) {
+    var response = await makePostApiCall(tripJson, "trip/getBookedTrips");
+    var tripResource = handleApiResponse(response);
+    updateTableWithJsonObject(response, "my-trips-table-form");
+    // clearFormFields("travel-form");
 }

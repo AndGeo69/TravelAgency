@@ -17,12 +17,12 @@ public class TripConverter implements Converter<TripResource, Trip> {
     @Override
     public Trip convert(TripResource source) {
         Trip trip = new Trip();
-        trip.setId(source.getTripId());
         trip.setStartDate(source.getStartDate());
         trip.setEndDate(source.getEndDate());
         trip.setStartLocation(source.getStartLocation());
         trip.setEndLocation(source.getEndLocation());
         trip.setAgency(getAgencyById(source.getAgencyId()));
+        trip.setSchedule(source.getSchedule());
         trip.setAvailableCapacity(source.getAvailableCapacity());
         return trip;
     }
@@ -39,6 +39,8 @@ public class TripConverter implements Converter<TripResource, Trip> {
         tripResource.setStartLocation(trip.getStartLocation());
         tripResource.setEndLocation(trip.getEndLocation());
         tripResource.setAgencyId(trip.getAgency().getId());
+        tripResource.setAgencyName(trip.getAgency().getName());
+        tripResource.setSchedule(trip.getSchedule());
         tripResource.setAvailableCapacity(trip.getAvailableCapacity());
         return tripResource;
     }
