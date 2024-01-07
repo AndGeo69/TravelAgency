@@ -136,9 +136,13 @@
         <img class="logo" id="spinnerLogo" src="logo.svg">
     </div>
 
-    <div id="response-container" class="container" style="display: none;">        
-        <span id="close-icon" onclick="closeResponseContainer()">&#10006;</span>
-        <p id="response-message"></p>
+    <div id="response-container" class="container" style="display: none;">  
+        <span id="close-icon">&#10006;</span>
+        <div class="rowWrapper" id = "confirmationContainer">
+            <p id="response-message"></p>
+            <button class="customBtn" id="confirmationBtn" value="Confirm">Confirm?</button> 
+        </div>
+
     </div>
 </div>
 </body>

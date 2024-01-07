@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import travel.agency.resources.BookingResource;
 import travel.agency.resources.TripResource;
 import travel.agency.service.TripService;
 
@@ -31,4 +32,8 @@ public class TripController {
         return ResponseEntity.ok(tripService.getBookedTrips(userId));
     }
 
+    @PostMapping(path = "book")
+    public ResponseEntity<TripResource> bookTrip(@RequestBody BookingResource bookingResource) {
+        return ResponseEntity.ok(tripService.bookTrip(bookingResource));
+    }
 }

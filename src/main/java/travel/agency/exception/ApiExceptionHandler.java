@@ -18,8 +18,8 @@ import java.util.Map;
 public class ApiExceptionHandler {
 
     @ExceptionHandler({UserAlreadyExistsException.class, UnknownUserException.class, UnknownUserTypeException.class,
-            RequiredFieldsException.class, EmptyTripException.class})
-    public ResponseEntity<Object> handleUserAlreadyExistsException(ApiException e) {
+            RequiredFieldsException.class, EmptyTripException.class, InvalidPasswordException.class})
+    public ResponseEntity<Object> handleUserException(ApiException e) {
         ErrorMessage error = ErrorMessage.builder()
                 .code(e.getApiError().getCode())
                 .message(e.getMessage())

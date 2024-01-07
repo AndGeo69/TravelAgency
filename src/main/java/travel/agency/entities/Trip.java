@@ -47,6 +47,21 @@ public class Trip {
     @OneToMany(mappedBy = "id.trip")
     private List<ClientBooking> clientBookings = new ArrayList<>();
 
+    public void addClientBooking(ClientBooking clientBooking) {
+        clientBookings.add(clientBooking);
+    }
+
+    public boolean hasValidCapacity() {
+        if (this.getAvailableCapacity() == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public void decrementAvailableCapacity() {
+        this.availableCapacity--;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

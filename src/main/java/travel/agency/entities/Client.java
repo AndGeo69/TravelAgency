@@ -32,6 +32,10 @@ public class Client {
     @OneToMany(mappedBy = "id.client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientBooking> clientBookings = new ArrayList<>();
 
+    public void addClientBooking(ClientBooking clientBooking) {
+        clientBookings.add(clientBooking);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

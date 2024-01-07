@@ -30,6 +30,12 @@ document.getElementById("my-trips-table").addEventListener('click', async functi
     await getMyTrips();
 });
 
+document.getElementById("close-icon").addEventListener('click', async function (evt) {
+    closeResponseContainer()
+});
+
+
+// document.getElementById("confirmationContainer").sty
 
 function addListenerOnNavBarBtns() {
     const navElem = document.getElementById("navId");
@@ -142,7 +148,7 @@ function handleApiResponse(response) {
         }
         displayResponseMessage(msg);
     } else {
-        displayResponseMessage("Erron occured or null reponse from api call.");
+        displayResponseMessage("Error occured or null reponse from api call.");
     }
 }
 
@@ -200,13 +206,13 @@ async function signInAsync(data) {
 }
 
 //TODO remove this, added for easier debugging
-toggleElementById("trip-register");
+// toggleElementById("trip-register");
 
 
 function handleLoggedInUser() {
     if (loggedInUser != null) {
         if (loggedInUser.type.toLowerCase() == "agency") {
-            // toggleElementById("trip-register");
+            toggleElementById("trip-register");
             //TODO uncomment this, added for easier debugging
         }
         toggleElementById("signin");
@@ -276,6 +282,14 @@ function handleJsonResponse(response) {
 }
 
 function displayResponseMessage(message) {
+    displayResponseMessage(message, false);
+}
+
+function displayConfirmationMessage(message) {
+    displayResponseMessage(message, true);
+}
+
+function displayResponseMessage(message, isConfirmation) {
     if (message == null) {
         return;
     }
@@ -287,6 +301,13 @@ function displayResponseMessage(message) {
 
     // Show the container
     responseContainer.style.display = 'block';
+
+    const confirmBtn = document.getElementById("confirmationBtn");
+    if (isConfirmation) {
+        confirmBtn.style.display = "inline-block";
+    } else {
+        confirmBtn.style.display = "none";
+    }
 }
 
 function updateText(text) {
@@ -351,6 +372,23 @@ function updateTableWithJsonObject(tripList, tableId) {
     // Add new rows from the tripList
     tripList.forEach(trip => {
         var row = table.insertRow(-1);
+        row.id = 'tripRow_' + trip.tripId; // Assuming tripId is a unique identifier
+
+
+        //TODO this iterates the whole clicked triplist and triggers bookTrip for every previous trip
+        
+        // Add click listener to each row
+        row.addEventListener('click', function () {
+            if (validateSignedIn()) {
+                showConfirmationDialog(trip);
+
+                document.getElementById("confirmationBtn").addEventListener('click', async function (evt) {
+                    bookTrip(trip);
+                    getAvailableTripsAndLoadTable();
+                });
+            }
+        });
+
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
         var cell3 = row.insertCell(2);
@@ -367,6 +405,40 @@ function updateTableWithJsonObject(tripList, tableId) {
         cell6.innerHTML = trip.availableCapacity;
         cell7.innerHTML = trip.schedule;
     });
+}
+
+function showConfirmationDialog(trip) {
+    displayConfirmationMessage("Book trip of Agency: " +
+     trip.agencyName + " from:  " + trip.startLocation + " to: " + trip.endLocation + " ?");
+}
+
+function validateSignedIn() {
+    if (loggedInUser == null) {
+        toggleShowables(document.getElementById("signin"))
+        return false;
+    } else {
+        return true;
+    }
+}
+
+async function bookTrip(trip) { // TO be tested
+    let data = JSON.stringify({
+        "tripId": trip.tripId,
+        "userId": loggedInUser.id
+    });
+
+
+    await bookTripAsync(data);
+}
+
+async function bookTripAsync(tripJson) {
+    var response = await makePostApiCall(tripJson, "trip/book");
+    var tripResource = handleApiResponse(response);
+    if (tripResource != null) {
+        displayResponseMessage("Successfully booked trip " + tripResource.tripId);
+    } else {
+        displayResponseMessage("Trip is unavailable"); 
+    }
 }
 
 // updateTable(tripTestData, "trips-table-form");
@@ -389,7 +461,7 @@ async function getAvailableTrips() {
     }
 }
 
-function getAvailableTripsAndLoadTable() {
+async function getAvailableTripsAndLoadTable() {
     getAvailableTrips().then(response => {
         if (response) {
             updateTableWithJsonObject(response, "trips-table-form");

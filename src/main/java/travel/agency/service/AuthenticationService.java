@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import travel.agency.entities.Agency;
 import travel.agency.entities.Client;
-import travel.agency.exception.RequiredFieldsException;
-import travel.agency.exception.UnknownUserException;
-import travel.agency.exception.UnknownUserTypeException;
-import travel.agency.exception.UserAlreadyExistsException;
+import travel.agency.exception.*;
 import travel.agency.repository.AgencyRepository;
 import travel.agency.repository.ClientRepository;
 import travel.agency.resources.CredentialsResource;
@@ -76,14 +73,22 @@ public class AuthenticationService {
         if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Client.name().toLowerCase())) {
             Client client = clientRepository.findById(resource.getId()).orElse(null);
             if (client != null) {
-                return new UserResource(client.getId(), client.getName(), UserTypeEnum.Client);
+                if (client.getPassword().equals(resource.getPassword())) {
+                    return new UserResource(client.getId(), client.getName(), UserTypeEnum.Client);
+                } else {
+                    throw new InvalidPasswordException();
+                }
             }
 
             throw new UnknownUserException();
         } else if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Agency.name().toLowerCase())) {
             Agency agency = agencyRepository.findById(resource.getId()).orElse(null);
             if (agency != null) {
-                return new UserResource(agency.getId(), agency.getName(), UserTypeEnum.Agency);
+                if (agency.getPassword().equals(resource.getPassword())) {
+                    return new UserResource(agency.getId(), agency.getName(), UserTypeEnum.Agency);
+                } else {
+                    throw new InvalidPasswordException();
+                }
             }
 
             throw new UnknownUserException();

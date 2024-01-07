@@ -20,6 +20,8 @@ public enum APIError {
     UNKNOWN_USER_TYPE(HttpStatus.NOT_FOUND, 404004, "Unknown user type, please try again."),
     REQUIRED_FIELDS(HttpStatus.NOT_FOUND, 404005, "All fields are required."),
     EMPTY_TRIP(HttpStatus.NOT_FOUND, 404006, "Trip information missing."),
+    INVALID_PASSWORD(HttpStatus.NOT_FOUND, 404007, "Wrong password."),
+    TRIP_FULL(HttpStatus.NOT_FOUND, 404008, "Trip is full."),
 
     // HTTP_STATUS: 500
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 50001, "Internal Server Error");

@@ -76,6 +76,7 @@ select {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
 }
 
 .columnWrapper {
@@ -130,7 +131,7 @@ th {
     max-width: 800px;
     margin: 20px auto;
     padding: 20px;
-    background-color: #014436c9;
+    background-color: #194c42c9;
     border-radius: 5px;
     box-shadow: 14px 14px 9px 3px rgb(0 0 0 / 23%);
     display: none;
@@ -152,7 +153,7 @@ th {
 
 .customBtn {
     height: 5vh;
-    background-color: #04453d;
+    background-color: #5c1a59e6;
     color: #fff;
     padding: 10px 15px;
     border: none;
@@ -191,4 +192,8 @@ th {
 #textAreaSchedule {
     resize: none;
     margin-bottom: 10px;
+}
+
+#confirmationBtn {
+    margin-right: 3vh;
 }

@@ -7,6 +7,6 @@ import travel.agency.entities.Trip;
 import java.util.List;
 
 public interface TripRepository extends JpaRepository<Trip, Long> {
-    @Query("Select t from Trip t where startDate > CURDATE()")
+    @Query("Select t from Trip t where startDate > CURDATE() and availableCapacity >= 1")
     List<Trip> findAvailableTrips();
 }
