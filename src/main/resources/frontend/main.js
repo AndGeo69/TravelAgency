@@ -34,8 +34,10 @@ document.getElementById("close-icon").addEventListener('click', async function (
     closeResponseContainer()
 });
 
-
-// document.getElementById("confirmationContainer").sty
+document.getElementById("searchTripBtn").addEventListener('click', async function (evt) {
+    evt.preventDefault();
+    await searchTrip();
+});
 
 function addListenerOnNavBarBtns() {
     const navElem = document.getElementById("navId");
@@ -51,6 +53,7 @@ function addListenerOnNavBarBtns() {
 
 addListenerOnNavBarBtns();
 toggleElementById("trip-register");
+toggleElementById("my-trips-table");
 
 function toggleShowables(trg) {
     var elems = document.querySelectorAll(".showable");
@@ -208,26 +211,26 @@ async function signInAsync(data) {
 //TODO remove this, added for easier debugging
 // toggleElementById("trip-register");
 
+function isAgency() {
+    if (loggedInUser == null) {
+        return false;
+    }
+    return loggedInUser.type.toLowerCase() == "agency";
+}
 
 function handleLoggedInUser() {
     if (loggedInUser != null) {
-        if (loggedInUser.type.toLowerCase() == "agency") {
+        if (isAgency()) {
             toggleElementById("trip-register");
-            //TODO uncomment this, added for easier debugging
         }
         toggleElementById("signin");
         toggleElementById("signup");   
         toggleElementById("my-trips-table");   
          
         toggleShowables(document.getElementById("trips-table"))
-        populateMyTripsTable(myTripsTestData);
     }
 }
 
-function populateMyTripsTable(dataToPopulateTable) {
-    //TODO adjust test data to user / agency my trips accordingly
-    updateTable(dataToPopulateTable, "my-trips-table-form");
-}
 
 function isElemDisplayed(elemId) {
     return document.getElementById(elemId).style.display != "none";
@@ -318,46 +321,7 @@ function closeResponseContainer() {
     document.getElementById('response-container').style.display = 'none';
 }
 
-function updateTable(json, tableId) {
-    result = jQuery.parseJSON(json);
-    var table = document.getElementById(tableId);
-
-    var rowCount = table.rows.length;
-    for (var i = rowCount - 1; i > 0; i--) {
-        table.deleteRow(i);
-    }
-
-    for(var k in result) {
-        var trip = result[k];
-
-        startLoc = trip.startLocation;
-        endLoc = trip.endLocation;
-        startDate = trip.startDate;
-        endDate = trip.endDate;
-        agency = trip.agency;
-        slotsLeft = trip.slotsLeft;
-        schedule = trip.schedule;
-
-        var row = table.insertRow(-1);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-        var cell5 = row.insertCell(4);
-        var cell6 = row.insertCell(5);
-        var cell7 = row.insertCell(6);
-
-        cell1.innerHTML = startLoc;
-        cell2.innerHTML = endLoc;
-        cell3.innerHTML = startDate;
-        cell4.innerHTML = endDate;
-        cell5.innerHTML = agency;
-        cell6.innerHTML = slotsLeft;
-        cell7.innerHTML = schedule;
-    }
-}
-
-function updateTableWithJsonObject(tripList, tableId) {
+function updateTableWithJsonObject(tripList, tableId, isMyTrips) {
     if (tripList == null) {
         return;
     }
@@ -372,22 +336,20 @@ function updateTableWithJsonObject(tripList, tableId) {
     // Add new rows from the tripList
     tripList.forEach(trip => {
         var row = table.insertRow(-1);
-        row.id = 'tripRow_' + trip.tripId; // Assuming tripId is a unique identifier
 
+        if (!isMyTrips && !isAgency()) {
+            row.id = 'tripRow_' + trip.tripId; // Assuming tripId is a unique identifier
 
-        //TODO this iterates the whole clicked triplist and triggers bookTrip for every previous trip
-        
-        // Add click listener to each row
-        row.addEventListener('click', function () {
-            if (validateSignedIn()) {
-                showConfirmationDialog(trip);
-
-                document.getElementById("confirmationBtn").addEventListener('click', async function (evt) {
-                    bookTrip(trip);
-                    getAvailableTripsAndLoadTable();
-                });
-            }
-        });
+            row.setAttribute('class', 'available-trips-rows');
+            row.setAttribute('id', trip.tripId);
+            
+            // Add click listener to each row
+            row.addEventListener('click', function (evt) {
+                if (validateSignedIn()) {
+                    showConfirmationDialog(trip);
+                }
+            });
+        }
 
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
@@ -405,7 +367,40 @@ function updateTableWithJsonObject(tripList, tableId) {
         cell6.innerHTML = trip.availableCapacity;
         cell7.innerHTML = trip.schedule;
     });
+
+    if (!isMyTrips && !isAgency()) {
+        document.querySelectorAll('.available-trips-rows').forEach((row) => {
+            row.addEventListener('click', function(evt) {
+                removeConfirmBtnEventListeners();
+    
+                document.getElementById("confirmationBtn")
+                .addEventListener('click', async function (evt) {
+                    console.log("before book trip");
+                    bookTrip(row.id);
+                    console.log("after book trip");
+                    availableTripsAsync();
+                    console.log("after avail trip async");
+                });
+            });
+        })
+    }
 }
+
+async function availableTripsAsync() {
+    console.log("inside avail");
+    await getAvailableTripsAndLoadTable();
+}
+function removeConfirmBtnEventListeners() {
+    var confirmationBtn = document.getElementById("confirmationBtn");
+    var newConfirmationBtn = confirmationBtn.cloneNode(true);
+    confirmationBtn.parentNode.replaceChild(newConfirmationBtn, confirmationBtn);
+}
+
+
+// document.getElementById("confirmationBtn").addEventListener('click', async function (evt) {
+//     bookTrip(trip);
+//     getAvailableTripsAndLoadTable();
+// });
 
 function showConfirmationDialog(trip) {
     displayConfirmationMessage("Book trip of Agency: " +
@@ -421,9 +416,9 @@ function validateSignedIn() {
     }
 }
 
-async function bookTrip(trip) { // TO be tested
+async function bookTrip(tripId) { // TO be tested
     let data = JSON.stringify({
-        "tripId": trip.tripId,
+        "tripId": tripId,
         "userId": loggedInUser.id
     });
 
@@ -462,9 +457,10 @@ async function getAvailableTrips() {
 }
 
 async function getAvailableTripsAndLoadTable() {
+    removeConfirmBtnEventListeners();
     getAvailableTrips().then(response => {
         if (response) {
-            updateTableWithJsonObject(response, "trips-table-form");
+            updateTableWithJsonObject(response, "trips-table-form", false);
             console.log('Available Trips:', response);
         } else {
             // Handle error
@@ -486,30 +482,6 @@ function toggleElementById(id) {
 function toggleSpinner() {
     toggleElementById("spinner");
 }
-
-//TODO my trip test data - remove
-var myTripsTestData = JSON.stringify([
-    {
-        "startLocation": "Paris",
-        "endLocation": "Paris",
-        "startDate": "2023-12-10",
-        "endDate": "2023-12-15",
-        "agency": "Adventure Tours",
-        "slotsLeft": "15",
-        "schedule": "Explore the city of love"
-    },
-    {
-    "startLocation": "Thessaloniki",
-    "startLocation": "Thessaloniki",
-    "startDate": "2023-10-05",
-    "endDate": "2023-10-10",
-    "agency": "Saloniki tours",
-    "slotsLeft": "15",
-    "schedule": "Experience the city that never sleeps"
-    }
-]);
-
-
 document.getElementById("travel-form").addEventListener('submit', function (event) {
     event.preventDefault();
     console.log('Form submitted!');
@@ -554,7 +526,11 @@ async function getMyTrips() { // TO be tested
         return;
     }
     let data = JSON.stringify(
-        loggedInUser.id
+    {
+        "id":loggedInUser.id,
+        "userType": loggedInUser.type
+    }
+        
     );
 
 
@@ -564,6 +540,22 @@ async function getMyTrips() { // TO be tested
 async function getMyTripsAsync(tripJson) {
     var response = await makePostApiCall(tripJson, "trip/getBookedTrips");
     var tripResource = handleApiResponse(response);
-    updateTableWithJsonObject(response, "my-trips-table-form");
-    // clearFormFields("travel-form");
+    updateTableWithJsonObject(response, "my-trips-table-form", true);
+}
+
+async function searchTrip() { 
+     let data = JSON.stringify({
+        "availableCapacity": document.getElementById("search-tripMaxCapacity").value,
+        "startDate": document.getElementById("search-start-date").value,
+        "endDate": document.getElementById("search-end-date").value,
+        "startLocation": document.getElementById("search-startLocation").value,
+        "endLocation": document.getElementById("search-endLocation").value,
+    });
+
+    await searchTripAsync(data);
+}
+
+async function searchTripAsync(tripJson) {
+    var response = await makePostApiCall(tripJson, "trip/search");
+    updateTableWithJsonObject(response, "trips-table-form", false);
 }

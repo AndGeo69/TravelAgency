@@ -1,8 +1,6 @@
 package travel.agency.entities;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,14 +14,24 @@ import lombok.Setter;
 @Entity
 public class ClientBooking {
 
-    @EmbeddedId
-    private UserBookingId id;
+    @Id
+    @Column(name = "booking_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long bookingId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Client client;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trip_id", nullable = false)
+    private Trip trip;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ClientBooking that)) return false;
-        return id.equals(that.id);
+        return bookingId.equals(that.bookingId);
     }
 
     @Override

@@ -29,11 +29,12 @@ public class Client {
     @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "id.client", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientBooking> clientBookings = new ArrayList<>();
 
     public void addClientBooking(ClientBooking clientBooking) {
         clientBookings.add(clientBooking);
+        clientBooking.setClient(this);
     }
 
     @Override

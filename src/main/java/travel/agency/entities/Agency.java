@@ -29,7 +29,7 @@ public class Agency {
     @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "agency")
     private List<Trip> trips = new ArrayList<>();
 
     @Override

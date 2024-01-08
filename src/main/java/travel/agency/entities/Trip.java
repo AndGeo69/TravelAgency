@@ -44,18 +44,16 @@ public class Trip {
     @JoinColumn(name = "agency_id", nullable = false)
     private Agency agency;
 
-    @OneToMany(mappedBy = "id.trip")
+    @OneToMany(mappedBy = "trip")
     private List<ClientBooking> clientBookings = new ArrayList<>();
 
     public void addClientBooking(ClientBooking clientBooking) {
         clientBookings.add(clientBooking);
+        clientBooking.setTrip(this);
     }
 
     public boolean hasValidCapacity() {
-        if (this.getAvailableCapacity() == 0) {
-            return false;
-        }
-        return true;
+        return this.getAvailableCapacity() != 0;
     }
 
     public void decrementAvailableCapacity() {

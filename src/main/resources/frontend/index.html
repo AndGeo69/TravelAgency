@@ -18,7 +18,8 @@
     <a href="#" id="signin">Sign In</a>
     <a href="#" id="signup">Sign Up</a>
     <a href="#" id="trip-register">Add Trip</a>
-    <a href="#" style="display: none;" id="my-trips-table">My Trips</a>
+    <a href="#" id="my-trips-table">My Trips</a>
+    <a href="#" id="search-trip">Search Trip</a>
 </nav>
 
 <div class="container" id="main-container">
@@ -107,15 +108,12 @@
 
     <div class="showable" id="trip-register-form" style="display: none;">
         <form id="travel-form">
-            <!-- <div class="columnWrapper"> --> <!-- better UI using column/row wrapper classes -->
-                <label for="startLocation">Starting Location:</label>
-                <input type="text" id="startLocation" name="startLocation" placeholder="Enter starting location">
-    
-                 <label for="endLocation">Ending Location:</label> <!-- "ending" locatio doesnt make sense -->
-                <input type="text" id="endLocation" name="endLocation" placeholder="Enter end location">
-    
-            <!-- </div> -->
+            <label for="startLocation">Starting Location:</label>
+            <input type="text" id="startLocation" name="startLocation" placeholder="Enter starting location">
 
+                <label for="endLocation">Ending Location:</label> <!-- "ending" locatio doesnt make sense -->
+            <input type="text" id="endLocation" name="endLocation" placeholder="Enter end location">
+    
             <label for="start-date">Start Date:</label>
             <input type="date" id="start-date" name="start-date">
 
@@ -129,6 +127,27 @@
             <textarea id="textAreaSchedule" name="schedule" placeholder="Enter schedule description" rows="4"></textarea>
 
             <button class="customBtn" id="addTripBtn" value="Add Trip">Add Trip</button>
+        </form>
+    </div>
+
+    <div class="showable" id="search-trip-form" style="display: none;">
+        <form id="travel-form">
+            <label for="search-startLocation">Starting Location:</label>
+            <input type="text" id="search-startLocation" name="search-startLocation" placeholder="Enter starting location">
+
+            <label for="search-endLocation">Ending Location:</label> <!-- "ending" locatio doesnt make sense -->
+            <input type="text" id="search-endLocation" name="search-endLocation" placeholder="Enter end location">
+    
+            <label for="search-start-date">Start Date:</label>
+            <input type="date" id="search-start-date" name="search-start-date">
+
+            <label for="search-end-date">End Date:</label>
+            <input type="date" id="search-end-date" name="search-end-date" >
+
+            <label for="search-tripMaxCapacity">Max capacity:</label>
+            <input type="number" min="1" max="500" id="search-tripMaxCapacity" name="search-tripMaxCapacity" >
+
+            <button class="customBtn" id="searchTripBtn" value="Search Trip">Search Trip</button>
         </form>
     </div>
 

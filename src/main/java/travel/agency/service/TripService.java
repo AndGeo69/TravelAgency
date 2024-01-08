@@ -1,31 +1,43 @@
 package travel.agency.service;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import travel.agency.converter.TripConverter;
+import travel.agency.entities.Agency;
 import travel.agency.entities.Client;
 import travel.agency.entities.ClientBooking;
 import travel.agency.entities.Trip;
-import travel.agency.entities.UserBookingId;
 import travel.agency.exception.EmptyTripException;
 import travel.agency.exception.TripIsFullException;
 import travel.agency.exception.UnknownUserException;
+import travel.agency.repository.AgencyRepository;
 import travel.agency.repository.ClientRepository;
 import travel.agency.repository.TripRepository;
+import travel.agency.resources.BookedTripsCredsResource;
 import travel.agency.resources.BookingResource;
 import travel.agency.resources.TripResource;
+import travel.agency.resources.UserTypeEnum;
 
-import java.util.Collections;
-import java.util.List;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class TripService {
     private final TripRepository tripRepository;
     private final ClientRepository clientRepository;
+    private final AgencyRepository agencyRepository;
     private final TripConverter tripConverter;
+
+    private final EntityManager entityManager;
 
     public TripResource addTrip(@Validated @RequestBody TripResource tripResource) {
         if (tripResource == null) {
@@ -41,21 +53,43 @@ public class TripService {
         return tripConverter.convertToResource(trip);
     }
 
+    @Transactional
     public List<TripResource> getAvailableTrips() {
         return tripRepository.findAvailableTrips()
                 .stream().map(tripConverter::convertToResource).toList();
     }
 
-    public List<TripResource> getBookedTrips(Long userId) {
-        Client client = clientRepository.findById(userId).orElse(null);
-        if (client == null) {
+    public List<TripResource> getBookedTrips(BookedTripsCredsResource resource) {
+        if (resource == null) {
             return Collections.emptyList();
         }
-        return client.getClientBookings()
-                .stream().map(clientBooking -> clientBooking.getId().getTrip())
-                .map(tripConverter::convertToResource).toList();
+
+        if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Client.name().toLowerCase())) {
+            Client client = clientRepository.findById(resource.getId()).orElse(null);
+
+            if (client == null) {
+                return Collections.emptyList();
+            }
+
+            return client.getClientBookings()
+                    .stream().map(ClientBooking::getTrip)
+                    .map(tripConverter::convertToResource).toList();
+        } else if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Agency.name().toLowerCase())) {
+            Agency agency = agencyRepository.findById(resource.getId()).orElse(null);
+
+            if (agency == null) {
+                return Collections.emptyList();
+            }
+
+            return agency.getTrips()
+                    .stream()
+                    .map(tripConverter::convertToResource).toList();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
+    @Transactional
     public TripResource bookTrip(BookingResource resource) {
         if (resource == null) {
             throw new EmptyTripException();
@@ -84,7 +118,10 @@ public class TripService {
             throw new TripIsFullException();
         }
 
-        ClientBooking clientBooking = new ClientBooking(new UserBookingId(client, trip));
+        ClientBooking clientBooking = new ClientBooking();
+        clientBooking.setClient(client);
+        clientBooking.setTrip(trip);
+
         client.addClientBooking(clientBooking);
         trip.addClientBooking(clientBooking);
 
@@ -93,4 +130,71 @@ public class TripService {
         return tripConverter.convertToResource(trip);
     }
 
+    private Timestamp formatDate(Date date) {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(date.toString(), inputFormatter);
+        return Timestamp.from(zonedDateTime.toInstant());
+    }
+
+    @Transactional
+    public List<TripResource> searchTrip(TripResource tripResource) {
+        if (tripResource == null) {
+            return getAvailableTrips();
+        }
+
+        HashMap<String, String> queryMap = new HashMap<>();
+
+        List<String> queryParams = new ArrayList<>();
+
+        if (tripResource.getStartDate() != null) {
+            queryMap.put("start_date", String.valueOf(formatDate(tripResource.getStartDate())));
+
+            queryParams.add(String.valueOf(tripResource.getStartDate()));
+        }
+
+        if (tripResource.getEndDate() != null) {
+            queryMap.put("end_date", String.valueOf(formatDate(tripResource.getEndDate())));
+            queryParams.add(String.valueOf(tripResource.getEndDate()));
+        }
+
+        if (!tripResource.getStartLocation().isEmpty()) {
+            queryMap.put("start_location", String.valueOf(tripResource.getStartLocation()));
+            queryParams.add(String.valueOf(tripResource.getStartLocation()));
+        }
+
+        if (!tripResource.getEndLocation().isEmpty()) {
+            queryMap.put("end_location", String.valueOf(tripResource.getEndLocation()));
+            queryParams.add(String.valueOf(tripResource.getEndLocation()));
+        }
+
+        if (tripResource.getAvailableCapacity() != null) {
+            queryMap.put("available_capacity", String.valueOf(tripResource.getAvailableCapacity()));
+            queryParams.add(String.valueOf(tripResource.getAvailableCapacity()));
+        }
+
+        if (queryParams.isEmpty()) {
+            return getAvailableTrips();
+        }
+
+        StringBuilder sqlBuilder = new StringBuilder("Select * from trip where ");
+        boolean isFirst = true;
+
+        for (String key : queryMap.keySet()) {
+            if (isFirst) {
+                sqlBuilder.append(" ").append(key)
+                        .append("= ").append("'").append(queryMap.get(key)).append("'");
+            } else {
+                sqlBuilder.append(" and ").append(key)
+                        .append("= ").append("'").append(queryMap.get(key)).append("'");
+            }
+            isFirst = false;
+        }
+
+        List<Trip> queriedTrips = entityManager.createNativeQuery(sqlBuilder.toString(), Trip.class).getResultList();
+        if (queriedTrips.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return queriedTrips.stream().map(tripConverter::convertToResource).toList();
+    }
 }
