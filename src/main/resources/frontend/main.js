@@ -81,47 +81,6 @@ function addRequiredOnAllInputs() {
 
 // addRequiredOnAllInputs(); //TODO uncomment to enable required fields
 
-// <!-- remove when server is functional-->
-var tripTestData = JSON.stringify([
-    {
-        "startLocation": "Paris",
-        "endLocation": "Paris",
-        "startDate": "2023-12-10",
-        "endDate": "2023-12-15",
-        "agency": "Adventure Tours",
-        "slotsLeft": "15",
-        "schedule": "Explore the city of love"
-    },
-    {
-        "startLocation": "Tokyo",
-        "endLocation": "Tokyo",
-        "startDate": "2023-11-20",
-        "endDate": "2023-11-25",
-        "agency": "Discover Japan",
-        "slotsLeft": "15",
-        "schedule": "Visit historical landmarks"
-    },
-    {
-        "startLocation": "New York",
-        "endLocation": "New York",
-        "startDate": "2023-10-05",
-        "endDate": "2023-10-10",
-        "agency": "Big Apple Adventures",
-        "slotsLeft": "15",
-        "schedule": "Experience the city that never sleeps"
-    },
-    {
-    "startLocation": "Thessaloniki",
-    "endLocation": "Thessaloniki",
-    "startDate": "2023-10-05",
-    "endDate": "2023-10-10",
-    "agency": "Saloniki tours",
-    "slotsLeft": "15",
-    "schedule": "Experience the city that never sleeps"
-    }
-]);
-
-
 
 async function makePostApiCall(data, endpoint) {
     toggleSpinner();
