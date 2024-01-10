@@ -1,0 +1,49 @@
+CREATE TABLE `agency` (
+  `id` bigint(20) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+CREATE TABLE `client` (
+  `id` bigint(20) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+CREATE TABLE `client_booking` (
+  `user_id` bigint(20) NOT NULL,
+  `trip_id` bigint(20) NOT NULL,
+  `booking_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`booking_id`),
+  KEY `FKncgk6b68w3cuu5ttcx501xthw` (`trip_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `FKncgk6b68w3cuu5ttcx501xthw` FOREIGN KEY (`trip_id`) REFERENCES `trip` (`id`),
+  CONSTRAINT `FKntguvenhmytk9a0l7ojtaep90` FOREIGN KEY (`user_id`) REFERENCES `client` (`id`),
+  CONSTRAINT `client_booking_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `client` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+CREATE TABLE `client_booking_seq` (
+  `next_val` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+CREATE TABLE `trip` (
+  `id` bigint(20) NOT NULL,
+  `available_capacity` int(11) DEFAULT NULL,
+  `end_date` datetime(6) DEFAULT NULL,
+  `end_location` varchar(255) DEFAULT NULL,
+  `schedule` longtext DEFAULT NULL,
+  `start_date` datetime(6) DEFAULT NULL,
+  `start_location` varchar(255) DEFAULT NULL,
+  `agency_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKab03gksoo5t3lo12ga3ixnykk` (`agency_id`),
+  CONSTRAINT `FKab03gksoo5t3lo12ga3ixnykk` FOREIGN KEY (`agency_id`) REFERENCES `agency` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+
+CREATE TABLE `trip_seq` (
+  `next_val` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
