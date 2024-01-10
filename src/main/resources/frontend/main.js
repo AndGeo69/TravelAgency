@@ -51,6 +51,18 @@ function addListenerOnNavBarBtns() {
     });
 }
 
+document.getElementById("start-date").addEventListener('change', function () {
+    // Set the minimum date for end-date to be the selected start date
+    document.getElementById("end-date").min = this.value;
+
+    // Clear the end date value if it's less than the start date
+    if (document.getElementById("end-date").value < this.value) {
+        document.getElementById("end-date").value = "";
+    }
+});
+document.getElementById("start-date").min = new Date().toISOString().split("T")[0];
+
+
 addListenerOnNavBarBtns();
 toggleElementById("trip-register");
 toggleElementById("my-trips-table");
@@ -79,7 +91,7 @@ function addRequiredOnAllInputs() {
     });
 }
 
-// addRequiredOnAllInputs(); //TODO uncomment to enable required fields
+addRequiredOnAllInputs(); //TODO uncomment to enable required fields
 
 
 async function makePostApiCall(data, endpoint) {
@@ -93,8 +105,12 @@ async function makePostApiCall(data, endpoint) {
             data: data,
         });
     } catch (err) {
-        displayResponseMessage(err);
-    } finally {
+    
+        msg = handleJsonResponse(err);
+        displayResponseMessage(msg);
+        response = err;
+    } 
+    finally {
         toggleSpinner();
         return response;
     }
@@ -144,7 +160,8 @@ async function signUp() {
 
 async function signUpAsync(data) {
     var response = await makePostApiCall(data, "signup");
-    handleAuthResponse(response);
+    var jsonresponse = handleJsonResponse(response);
+    var authresponse = handleAuthResponse(response);
     clearFormFields("signup-form");
 }
 
@@ -167,8 +184,6 @@ async function signInAsync(data) {
     clearFormFields("signin-form");
 }
 
-//TODO remove this, added for easier debugging
-// toggleElementById("trip-register");
 
 function isAgency() {
     if (loggedInUser == null) {
@@ -400,6 +415,7 @@ getAvailableTripsAndLoadTable();
 
 //another way to make rest calls, using js's fetch
 async function getAvailableTrips() {
+    toggleSpinner();
     try {
         const response = await fetch('http://localhost:8080/trip/getAvailableTrips');
         
@@ -408,11 +424,14 @@ async function getAvailableTrips() {
         }
 
         const jsonResponse = await response.json();
+        toggleSpinner();
         return jsonResponse;
     } catch (error) {
         console.error('Error fetching available trips:', error);
+        toggleSpinner();
         return null; // Handle error appropriately in your application
     }
+    
 }
 
 async function getAvailableTripsAndLoadTable() {
@@ -516,5 +535,13 @@ async function searchTrip() {
 
 async function searchTripAsync(tripJson) {
     var response = await makePostApiCall(tripJson, "trip/search");
-    updateTableWithJsonObject(response, "trips-table-form", false);
+    if (response.length == 0) {
+        displayResponseMessage("No trips found for such criteria");
+    } else {
+        if (isElemDisplayed("response-container")) {
+            toggleElementById("response-container");
+        }
+        toggleShowables(document.getElementById("trips-table"));
+        updateTableWithJsonObject(response, "trips-table-form", false);
+    }
 }

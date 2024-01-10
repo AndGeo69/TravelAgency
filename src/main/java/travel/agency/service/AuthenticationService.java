@@ -3,6 +3,7 @@ package travel.agency.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import travel.agency.EmailUtil;
 import travel.agency.entities.Agency;
 import travel.agency.entities.Client;
 import travel.agency.exception.*;
@@ -29,6 +30,10 @@ public class AuthenticationService {
                 resource.getEmail() != null &&
                 resource.getPassword() != null &&
                 resource.getUserType() != null) {
+
+            if (!EmailUtil.isValidEmail(resource.getEmail())) {
+                throw new RuntimeException("Email is not correctly formatted.");
+            }
 
             if (Objects.equals(resource.getUserType().toLowerCase(), UserTypeEnum.Client.name().toLowerCase())) {
                 Client client = clientRepository.findById(resource.getId()).orElse(null);

@@ -44,6 +44,8 @@ public class TripService {
             throw new EmptyTripException();
         }
 
+        validateTrip(tripResource);
+
         Trip trip = tripConverter.convert(tripResource);
         if (trip == null) {
             throw new EmptyTripException();
@@ -51,6 +53,39 @@ public class TripService {
          tripRepository.save(trip);
 
         return tripConverter.convertToResource(trip);
+    }
+
+    private void validateTrip(TripResource tripResource) {
+        if (tripResource.getAvailableCapacity() == null || tripResource.getAvailableCapacity() <= 0) {
+            throw new RuntimeException("Trip's available capacity must be positive number");
+        }
+
+        if (tripResource.getAgencyId() == null) {
+            throw new RuntimeException("Trip requires an agency");
+        }
+
+        if (tripResource.getStartLocation() == null || tripResource.getStartLocation().isEmpty()) {
+            throw new RuntimeException("Trip's start location is missing");
+        }
+
+        if (tripResource.getEndLocation() == null || tripResource.getEndLocation().isEmpty()) {
+            throw new RuntimeException("Trip's end location is missing");
+        }
+
+        Date startDate = tripResource.getStartDate();
+        Date endDate = tripResource.getEndDate();
+
+        if (startDate == null || endDate == null) {
+            throw new RuntimeException("Start date and end date are required");
+        }
+
+//        if (!startDate.after(new Date().)) {
+//            throw new RuntimeException("Start date must be in the future");
+//        }
+
+        if (startDate.after(endDate)) {
+            throw new RuntimeException("End date must be after start date");
+        }
     }
 
     @Transactional

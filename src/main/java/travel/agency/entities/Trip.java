@@ -34,7 +34,7 @@ public class Trip {
     @Column(name = "endLocation")
     private String endLocation;
 
-    @Column(name = "schedule")
+    @Column(name = "schedule", length = 65555)
     private String schedule;
 
     @Column(name = "availableCapacity")

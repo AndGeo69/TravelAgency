@@ -23,8 +23,26 @@
 </nav>
 
 <div class="container" id="main-container">
-    <h2 id="introHeader">Welcome to our Travel Agency</h2>
-    <p id="introParagraph">Plan your next adventure with us!</p>
+
+    <div class=" rowWrapper">
+        <div class="columnWrapper">
+            <h2 id="introHeader">Welcome to our Travel Agency</h2>
+            <p id="introParagraph">Plan your next adventure with us!</p>
+        </div>
+        <div class="columnWrapper">
+            <div id="response-container" class="container" style="display: none;">  
+                <span id="close-icon">&#10006;</span>
+                <div class="rowWrapper" id = "confirmationContainer">
+                    <p id="response-message"></p>
+                    <button class="customBtn" id="confirmationBtn" value="Confirm">Confirm?</button> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="spinner" style="display: none;">
+        <img class="logo" id="spinnerLogo" src="logo.svg">
+    </div>
 
     <table class="showable table" id="trips-table-form">
         <thead>
@@ -91,7 +109,7 @@
         <input type="text" id="signup-name" name="signup-name" placeholder="Enter your name">
 
         <label for="signup-email">Email:</label>
-        <input type="email" id="signup-email" name="signup-email" placeholder="Enter your email">
+        <input type="email" id="signup-email" name="signup-email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" placeholder="Enter your email">
 
         <label for="signup-password">Password:</label>
         <input type="password" id="signup-password" name="signup-password" placeholder="Enter your password">
@@ -151,18 +169,14 @@
         </form>
     </div>
 
-    <div id="spinner" style="display: none;">
-        <img class="logo" id="spinnerLogo" src="logo.svg">
-    </div>
 
-    <div id="response-container" class="container" style="display: none;">  
+    <!-- <div id="response-container" class="container" style="display: none;">  
         <span id="close-icon">&#10006;</span>
         <div class="rowWrapper" id = "confirmationContainer">
             <p id="response-message"></p>
             <button class="customBtn" id="confirmationBtn" value="Confirm">Confirm?</button> 
         </div>
-
-    </div>
+    </div> -->
 </div>
 </body>
 <script src="main.js"></script>
