@@ -130,7 +130,7 @@ function handleApiResponse(response) {
     }
 }
 
-function handleAuthResponse(response) {
+async function handleAuthResponse(response) {
     var msg;
     if (response != null) {
         if (response.responseText != null) {
@@ -139,6 +139,7 @@ function handleAuthResponse(response) {
             msg = "Welcome " + response.type + " " + response.name;
             loggedInUser = response;
             handleLoggedInUser();
+            await getAvailableTripsAndLoadTable();
         }
         displayResponseMessage(msg);
     } else {
